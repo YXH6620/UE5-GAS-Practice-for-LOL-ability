@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseAttributeSet.h"
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangeEvent, float, NewValue);
 
 UCLASS()
 class GAS_DEMO_API AMyCharacter : public ACharacter
@@ -26,4 +29,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(BlueprintAssignable, Category = "Ability")
+	FOnHealthChangeEvent HPChangeEvent;
+	void OnHealthAttributeChanged(const FOnAttributeChangeData& Data);
 };

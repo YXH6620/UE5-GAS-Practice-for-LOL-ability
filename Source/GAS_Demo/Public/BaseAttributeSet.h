@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
-#include "AbilitySystemComponent.h"
+#include "AbilitySystemComponent.h" // 5.3 AttributeSet需要加该头文件;在ASC下有AS的配表功能
 #include "BaseAttributeSet.generated.h"
 
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
@@ -45,4 +45,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseAttributeSet")
 	FGameplayAttributeData MaxStrength;
 	ATTRIBUTE_ACCESSORS(UBaseAttributeSet, MaxStrength);
+
+	void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 };

@@ -21,6 +21,8 @@ void AMyCharacter::BeginPlay()
 	if(MyAbilitySystemComponent)
 	{
 		MyAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UBaseAttributeSet::GetHPAttribute()).AddUObject(this, &AMyCharacter::OnHealthAttributeChanged);
+		MyAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UBaseAttributeSet::GetMPAttribute()).AddUObject(this, &AMyCharacter::OnMPAttributeChanged);
+		MyAbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UBaseAttributeSet::GetStrengthAttribute()).AddUObject(this, &AMyCharacter::OnStrengthAttributeChanged);
 	}
 }
 
@@ -41,6 +43,16 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void AMyCharacter::OnHealthAttributeChanged(const FOnAttributeChangeData& Data)
 {
 	HPChangeEvent.Broadcast(Data.NewValue);
+}
+
+void AMyCharacter::OnMPAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	MPChangeEvent.Broadcast(Data.NewValue);
+}
+
+void AMyCharacter::OnStrengthAttributeChanged(const FOnAttributeChangeData& Data)
+{
+	StrengthChangeEvent.Broadcast(Data.NewValue);
 }
 
 FGameplayAbilityInfo AMyCharacter::GameplayAbilityInfo(TSubclassOf<UBaseGameplayAbility> AbilityClass, int level)

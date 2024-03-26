@@ -31,7 +31,7 @@ struct FGameplayAbilityInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AbilityInfo")
 	TSubclassOf<UBaseGameplayAbility> AbilityClass;
 
-	FGameplayAbilityInfo(){}
+	FGameplayAbilityInfo();
 	FGameplayAbilityInfo(float CD, ECostType CostType, float CostValue, UMaterialInstance* MaterialInstance, TSubclassOf<UBaseGameplayAbility> AbilityClass);
 };
 

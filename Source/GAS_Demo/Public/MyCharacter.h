@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseAttributeSet.h"
+#include "BaseGameplayAbility.h"
 #include "GameFramework/Character.h"
 #include "MyCharacter.generated.h"
 
@@ -32,4 +33,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Ability")
 	FOnHealthChangeEvent HPChangeEvent;
 	void OnHealthAttributeChanged(const FOnAttributeChangeData& Data);
+
+	UFUNCTION(BlueprintCallable, Category = "BaseCharacter")
+	FGameplayAbilityInfo GameplayAbilityInfo(TSubclassOf<UBaseGameplayAbility> AbilityClass, int level);
 };

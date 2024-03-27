@@ -1,27 +1,27 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BlastTargetActor.h"
+#include "FireAroundTargetActor.h"
 
-
-
-void ABlastTargetActor::StartTargeting(UGameplayAbility* Ability)
+void AFireAroundTargetActor::StartTargeting(UGameplayAbility* Ability)
 {
 	Super::StartTargeting(Ability);
 	PrimaryPC = Cast<APlayerController>(Ability->GetOwningActorFromActorInfo()->GetInstigatorController());
 }
 
-void ABlastTargetActor::ConfirmTargetingAndContinue()
+void AFireAroundTargetActor::ConfirmTargetingAndContinue()
 {
-	FVector LookPoint;
-	GetPlayerLookAtPoint(LookPoint);
+	APawn* SelfPawn = PrimaryPC->GetPawn();
+	if(!SelfPawn)
+		return;
+	
+	FVector LookPoint = SelfPawn->GetActorLocation();
 	TArray<FOverlapResult> OverlapResults;
 	TArray<TWeakObjectPtr<AActor>> OverlapActors;
 
 	FCollisionQueryParams QueryParams;
 	QueryParams.bTraceComplex =false;
 	QueryParams.bReturnPhysicalMaterial = false;
-	APawn* SelfPawn = PrimaryPC->GetPawn();
 	if(SelfPawn)
 	{
 		QueryParams.AddIgnoredActor(SelfPawn);
@@ -31,7 +31,7 @@ void ABlastTargetActor::ConfirmTargetingAndContinue()
 		LookPoint,
 		FQuat::Identity,
 		FCollisionObjectQueryParams(ECC_Pawn),
-		FCollisionShape::MakeSphere(SelectRadius),
+		FCollisionShape::MakeSphere(FireAroundRadius),
 		QueryParams
 	);
 
@@ -48,16 +48,12 @@ void ABlastTargetActor::ConfirmTargetingAndContinue()
 	}
 
 	FGameplayAbilityTargetDataHandle TargetDataHandle;
-	FGameplayAbilityTargetData_LocationInfo* CenterLoc = new FGameplayAbilityTargetData_LocationInfo();
-	CenterLoc->TargetLocation.LiteralTransform = FTransform(LookPoint);
-	CenterLoc->TargetLocation.LocationType = EGameplayAbilityTargetingLocationType::LiteralTransform;
-	// 0号负载
-	TargetDataHandle.Add(CenterLoc);
+
 	if(OverlapResults.Num() > 0)
 	{
 		FGameplayAbilityTargetData_ActorArray* ActorArray = new FGameplayAbilityTargetData_ActorArray();
 		ActorArray->SetActors(OverlapActors);
-
+		// 0号负载
 		TargetDataHandle.Add(ActorArray);
 	}
 
@@ -66,34 +62,4 @@ void ABlastTargetActor::ConfirmTargetingAndContinue()
 	{
 		TargetDataReadyDelegate.Broadcast(TargetDataHandle);
 	}
-}
-
-bool ABlastTargetActor::GetPlayerLookAtPoint(FVector& Out_LookPoint)
-{
-	FVector ViewLoc;
-	FRotator ViewRot;
-	PrimaryPC->GetPlayerViewPoint(ViewLoc, ViewRot);
-
-	FHitResult HitResult;
-	FCollisionQueryParams QueryParams;
-	QueryParams.bTraceComplex = true;
-
-	APawn* SelfPawn = PrimaryPC->GetPawn();
-	if(SelfPawn)
-	{
-		QueryParams.AddIgnoredActor(SelfPawn);
-	}
-
-	bool TraceResult = GetWorld()->LineTraceSingleByChannel(
-		HitResult,
-		ViewLoc,
-		ViewLoc + ViewRot.Vector() * 5000.f,
-		ECC_Visibility,
-		QueryParams
-	);
-	if(TraceResult)
-	{
-		Out_LookPoint = HitResult.ImpactPoint;
-	}
-	return TraceResult;
 }
